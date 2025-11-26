@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Result Update</title>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA39tWy3eQ7sImuHthW36icGSRdcCbH_CE",
+  databaseURL: "https://mahalaxmi-result-default-rtdb.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ELEMENTS
+const citySelect = document.querySelector("select");
+const dateInput = document.getElementById("dateInput");
+const timeInput = document.getElementById("timeInput");
+const resultInput = document.getElementById("resultInput");
+const updateBtn = document.querySelector(".update-btn");
+
+// Set today automatically
+dateInput.value = new Date().toISOString().split("T")[0];
+
+updateBtn.addEventListener("click", () => {
+
+    const city = citySelect.value;
+    const date = dateInput.value;
+    const time = timeInput.value;
+    const result = resultInput.value;
+
+    if (!date || !time) {
+        alert("Select date & time!");
+        return;
+    }
+    if (result === "") {
+        alert("Enter result!");
+        return;
+    }
+
+    // FINAL DATETIME KEY
+    const dateTime = `${date}T${time}`;
+
+    // SAVE TO FIREBASE
+    set(ref(db, "results/" + city + "/" + dateTime), {
+        number: result
+    })
+    .then(() => {
+        alert("Updated Successfully!");
+    })
+    .catch((err) => {
+        alert(err);
+    });
+
+});
+</script>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: #1e2633;
+        color: #fff;
+    }
+    .container {
+        width: 90%;
+        max-width: 450px;
+        margin: 60px auto;
+        text-align: center;
+    }
+    h2 {
+        font-size: 28px;
+        margin-bottom: 40px;
+        font-weight: 700;
+    }
+    .form-card {
+        background: #2c3444;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        text-align: left;
+    }
+    label {
+        font-size: 14px;
+        margin-bottom: 6px;
+        display: block;
+        opacity: 0.8;
+    }
+    select, input {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+        border-radius: 6px;
+        border: none;
+        background: #1f2733;
+        color: #fff;
+        margin-bottom: 25px;
+        outline: none;
+    }
+    input[type="date"], input[type="time"] {
+        color-scheme: dark;
+    }
+    .update-btn {
+        width: 100%;
+        padding: 14px;
+        background: #ff3f7f;
+        border: none;
+        border-radius: 6px;
+        color: #fff;
+        font-size: 18px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 10px;
+        transition: 0.2s;
+    }
+    .update-btn:hover {
+        background: #ff2a6d;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Result Update</h2>
+
+    <div class="form-card">
+
+        <label>City</label>
+        <select>
+            <option>FARIDABAD</option>
+            <option>MAHA LAXMI</option>
+            <option>GURGAON</option>
+            <option>DELHI BAZAAR</option>
+            <option>SHREE GANESH</option>
+            <option>GALI</option>
+            <option>DISAWAR</option>
+            <option>GHAZIABAD</option>
+        </select>
+
+        <label>Date</label>
+        <input type="date" id="dateInput">
+
+        <label>Time</label>
+        <input type="time" id="timeInput">
+
+        <label>Result</label>
+        <input id="resultInput" type="number" placeholder="Result Number">
+
+        <button class="update-btn">UPDATE</button>
+    </div>
+</div>
+
+</body>
+</html>
